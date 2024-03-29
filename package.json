@@ -9,7 +9,9 @@
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^1.21.0",
+    "@react-native-picker/picker": "^2.7.2",
     "expo": "^50.0.14",
+    "expo-sqlite": "~13.4.0",
     "expo-status-bar": "~1.11.1",
     "nvm": "^0.0.4",
     "react": "18.2.0",

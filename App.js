@@ -38,7 +38,6 @@ const estilos = StyleSheet.create({
 		flex: 1,
 		alignItems: "stretch",
 		justifyContent: "flex-start",
-    backgroundColor: 'red'
 	},
 })
 
