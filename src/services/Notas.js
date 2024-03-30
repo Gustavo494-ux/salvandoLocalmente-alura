@@ -91,3 +91,14 @@ export async function buscaNotas() {
     })
   })  
 }
+
+export async function buscaNotasPorCategoria(categoria) {
+  return new Promise((resolve) => {
+    db.transaction((transaction) => {
+      transaction.executeSql('Select * FROM Notas WHERE Categoria = ?;',
+        [categoria], (transaction, resultado) => {
+          resolve(resultado.rows._array)
+        })
+    })
+  })  
+}

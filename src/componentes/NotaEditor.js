@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { Modal, View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from "react-native"
 import {Picker} from '@react-native-picker/picker';
-import { adicionaNota, atualizarNota, buscaNotas, removerNota } from "../services/Notas";
+import { adicionaNota, atualizarNota, removerNota } from "../services/Notas";
 
 
 export default function NotaEditor({mostrarNotas,notaSelecionada,setNotaSelecionada}) {
