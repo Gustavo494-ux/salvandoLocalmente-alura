@@ -1,35 +1,75 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { Modal, View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from "react-native"
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Picker} from '@react-native-picker/picker';
-export default function NotaEditor({mostrarNotas}) {
+import { adicionaNota, atualizarNota, buscaNotas, removerNota } from "../services/Notas";
+
+
+export default function NotaEditor({mostrarNotas,notaSelecionada,setNotaSelecionada}) {
+  useEffect(() => {
+    if (notaSelecionada.id){
+      if (notaSelecionada.id){
+        setNotaParaAtualizar(true);
+        preencheModal();
+        setModalVisivel(true);
+        return
+      } 
+      setNotaParaAtualizar(false);
+    } 
+
+    
+  },[notaSelecionada])
+
 
   const [titulo, setTitulo] = useState('') 
   const [categoria, setCategoria] = useState('Pessoal')
 
   const [texto, setTexto] = useState("")
   const [modalVisivel, setModalVisivel] = useState(false)
+  const [notaParaAtualizar, setNotaParaAtualizar] = useState(false)
 
   async function salvaNota(){
-    const id = await geraId();
-    console.log(id);
     const umaNota = {
-      id: id.toString(),
+      titulo: titulo,
+      categoria: categoria,
       texto: texto,
     }
-    await AsyncStorage.setItem(umaNota.id,umaNota.texto)    
-    mostrarNotas()
+    
+    if (notaParaAtualizar == true) {
+      await atualizarNota(umaNota);
+      mostrarNotas()
+    }  else {
+      await adicionaNota(umaNota);
+    }
+    mostrarNotas();
+    limparModal();
+  }
+  function preencheModal(){
+    setTitulo(notaSelecionada.titulo);
+    setCategoria(notaSelecionada.categoria);
+    setTexto(notaSelecionada.texto);
   }
 
-  async function geraId(){
-    const todasChaves = await AsyncStorage.getAllKeys();
-    if (todasChaves <= 0)  {
-      return  1
-    } else {
-      return  todasChaves.length + 1
+  useEffect(() => {
+    if (!modalVisivel) {
+      limparModal();
     }
-  }
+  }, [modalVisivel])
   
+  async function deletarNota(){
+    await removerNota(notaSelecionada);
+    limparModal();
+    mostrarNotas();
+  }
+
+  function limparModal(){
+    setTitulo('');
+    setCategoria('Pessoal');
+    setTexto('');
+    setNotaSelecionada({});
+    setNotaParaAtualizar(false);
+    setModalVisivel(false);
+    
+  }
 
   return(
     <>
@@ -70,10 +110,14 @@ export default function NotaEditor({mostrarNotas}) {
                 placeholder="Digite aqui seu lembrete"
                 value={texto}/>
               <View style={estilos.modalBotoes}>
-                <TouchableOpacity style={estilos.modalBotaoSalvar} onPress={() => salvaNota()}>
+                <TouchableOpacity style={estilos.modalBotaoSalvar} onPress={() =>salvaNota()}>
                   <Text style={estilos.modalBotaoTexto}>Salvar</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={estilos.modalBotaoCancelar} onPress={() => {setModalVisivel(false)}}>
+                { notaParaAtualizar ?  <TouchableOpacity style={estilos.modalBotaoDeletar} onPress={() => {deletarNota()}}>
+                  <Text style={estilos.modalBotaoTexto}>Deletar</Text>
+                </TouchableOpacity> : <></>
+                }
+                <TouchableOpacity style={estilos.modalBotaoCancelar} onPress={() => {limparModal()}}>
                   <Text style={estilos.modalBotaoTexto}>Cancelar</Text>
                 </TouchableOpacity>
               </View>
